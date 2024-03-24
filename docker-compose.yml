@@ -1,7 +1,7 @@
 version : "3.3"
 services :
   web :
-     images : sanketshirke/node-app-demo:latest
+     image : sanketshirke/node-app-demo:latest
      ports :
          - "8000:8000"
      volumes:
