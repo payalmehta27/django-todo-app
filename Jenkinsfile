@@ -1,32 +1,32 @@
 pipeline {
     agent any
     stages{
-        stage ("Code Cloned"){
+        stage("Code Cloned"){
             steps{
-                git url: "https://github.com/SanketShirke/django-todo-app.git", branch: "main"
                 echo "Code Cloned"
+                git url: "https://github.com/SanketShirke/django-todo-app.git", branch: "main"
             }
         }
-        stage ("Code Build"){
+        stage("Code Build"){
             steps{
-                sh "docker build . -t django-app-demo"
+                sh "docker build . -t django-app"
                 echo "Code Build"
             }
         }
-        stage ("Push the image to Docker Hub"){
-            steps {
-            withCredentials([usernamePassword(credentialsId:"dockerhub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-            sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-            sh "docker tag django-app-demo ${env.dockerHubUser}/django-app-demo:latest"
-            sh "docker push ${env.dockerHubUser}/django-app-demo:latest"
+        stage("Push to the Docker Hub"){
+            steps{
+                echo "Image push to docker hub"
+                withCredentials([usernamePassword(credentialsId:"dockerhub",passwordVariable:"dockerhubpass",usernameVariable:"dockerhubuser")]){
+                sh "docker login -u ${env.dockerhubuser} -p ${env.dockerhubpass}"
+                sh "docker tag django-app:latest ${env.dockerhubuser}/django-app:latest"
+                sh "docker push ${env.dockerhubuser}/django-app:latest"
                 }
-                echo "Image push to Docker Hub"
             }
         }
-        stage ("Deploy the Application on EC2 Instance"){
-            steps {
-                sh "docker-compose down && docker-compose up -d"
-                echo "Code has been deployed on EC2"
+        stage("Deploy the application"){
+            steps{
+                sh "docker compose  up -d"
+                echo "Deploy Sucesfully"
             }
         }
     }
