@@ -1,5 +1,5 @@
 pipeline {
-    agent {label 'dev'}
+    agent any
     stages{
         stage("Code Clone"){
             steps{
@@ -29,4 +29,5 @@ pipeline {
                 sh "docker compose down && docker compose up -d"
             }
         }
-    {label 'dev'}
+    }
+}
