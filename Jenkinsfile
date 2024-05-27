@@ -1,33 +1,32 @@
 pipeline {
-    agent any
+    agent {label 'dev'}
     stages{
-        stage("Code Cloned"){
+        stage("Code Clone"){
             steps{
                 echo "Code Cloned"
-                git url: "https://github.com/SanketShirke/django-todo-app.git", branch: "main"
+                git url: "https://github.com/SanketShirke/django-todo-app.git" , branch: "main"
             }
         }
         stage("Code Build"){
             steps{
-                sh "docker build . -t django-app"
                 echo "Code Build"
+                sh "docker build . -t django-app"
             }
         }
-        stage("Push to the Docker Hub"){
+        stage("Push the image to Docker Hub"){
             steps{
-                echo "Image push to docker hub"
+                echo "Image Push"
                 withCredentials([usernamePassword(credentialsId:"dockerhub",passwordVariable:"dockerhubpass",usernameVariable:"dockerhubuser")]){
-                sh "docker login -u ${env.dockerhubuser} -p ${env.dockerhubpass}"
+                sh "docker login -u ${env.dockerhubuser} -p ${env.dockerhubpass}" 
                 sh "docker tag django-app:latest ${env.dockerhubuser}/django-app:latest"
                 sh "docker push ${env.dockerhubuser}/django-app:latest"
                 }
             }
         }
-        stage("Deploy the application"){
+        stage("Deploy the Application"){
             steps{
-                sh "docker compose  up -d"
-                echo "Deploy Sucesfully"
+                echo "Deployed the Application"
+                sh "docker compose down && docker compose up -d"
             }
         }
-    }
-}
+    {label 'dev'}
